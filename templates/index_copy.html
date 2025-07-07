@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Waypoint Tool</title>
+  <style>
+    input { width: 90px; }
+    td, th { padding: 5px; border: 1px solid #aaa; }
+    table { border-collapse: collapse; margin-bottom: 1em; }
+    textarea { width: 99%; height: 70px; }
+  </style>
+</head>
+<body>
+  <h2>Waypoint Calculation Tool</h2>
+  <form method="post">
+    <table>
+      <tr>
+        <th colspan="6">Column 1: Compute Distance and Angle</th>
+      </tr>
+      <tr>
+        <td>Lat1</td><td>Lon1</td><td>Alt1</td>
+        <td>Lat2</td><td>Lon2</td><td>Alt2</td>
+      </tr>
+      <tr>
+        <td><input name="lat1" value="{{lat1}}"></td>
+        <td><input name="lon1" value="{{lon1}}"></td>
+        <td><input name="alt1" value="{{alt1}}"></td>
+        <td><input name="lat2" value="{{lat2}}"></td>
+        <td><input name="lon2" value="{{lon2}}"></td>
+        <td><input name="alt2" value="{{alt2}}"></td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <button name="action" value="compute_dist_angle">Compute Distance & Angle</button>
+          Distance: <input readonly value="{{result_dist}}">
+          Angle: <input readonly value="{{result_ang}}">
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th colspan="6">Column 2: Compute Coordinate 2 from Coordinate 1, Distance, and Angle</th>
+      </tr>
+      <tr>
+        <td>Lat1</td><td>Lon1</td><td>Alt1</td>
+        <td>Distance (m)</td><td>Angle (deg)</td><td>Alt2</td>
+      </tr>
+      <tr>
+        <td><input name="lat1b" value="{{lat1b}}"></td>
+        <td><input name="lon1b" value="{{lon1b}}"></td>
+        <td><input name="alt1b" value="{{alt1b}}"></td>
+        <td><input name="dist2" value="{{dist2}}"></td>
+        <td><input name="ang2" value="{{ang2}}"></td>
+        <td><input name="alt2b" value="{{alt2b}}"></td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <button name="action" value="compute_latlon">Compute Lat2/Lon2</button>
+          Lat2: <input readonly value="{{lat2b}}">
+          Lon2: <input readonly value="{{lon2b}}">
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th colspan="3">Append Waypoint to File</th>
+      </tr>
+      <tr>
+        <td>Latitude</td><td>Longitude</td><td>Altitude</td>
+      </tr>
+      <tr>
+        <td><input name="wplat"></td>
+        <td><input name="wplon"></td>
+        <td><input name="wpalt"></td>
+      </tr>
+      <tr>
+        <td colspan="3"><button name="action" value="append_waypoint">Append</button></td>
+      </tr>
+    </table>
+  </form>
+  {% if msg %}<b style="color:red">{{msg}}</b>{% endif %}
+  <hr>
+  <b>Current Waypoints:</b>
+  <pre style="background:#f5f5f5">{{ waypoints|tojson(indent=2) }}</pre>
+  <a href="{{ url_for('cesium_map') }}">View in Cesium Map</a>
+</body>
+</html>

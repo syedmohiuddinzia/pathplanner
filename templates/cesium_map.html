@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cesium Waypoints Map</title>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <!-- New Navigation CSS (served locally) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/CesiumNavigation.css') }}">
+  <style>
+    html, body, #cesiumContainer { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;}
+    #replot { position: absolute; top: 10px; left: 10px; z-index: 10; background: #fff; border-radius: 6px; border: 1px solid #ccc; padding: 6px 16px;}
+  </style>
+</head>
+<body>
+  <button id="replot" onclick="window.location.href='/'">Enter Waypoints</button>
+  <div id="cesiumContainer"></div>
+
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Cesium.js"></script>
+  <!-- New Navigation JS (served locally) -->
+  <script src="{{ url_for('static', filename='js/CesiumNavigation.umd.min.js') }}"></script>
+  <script>
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OTUzMGEzMC0yMzZiLTQ4NjYtYTUyYy00MDQwZjk5M2FmNzMiLCJpZCI6Mjc4MjMxLCJpYXQiOjE3NTE2NDEwNjl9.dAXGw2v38uj-oapdM42kfi8O8J0BEyOdV0rc3_aE5OQ';
+    fetch('/waypoints.json')
+      .then(resp => resp.json())
+      .then(points => {
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+          navigationHelpButton: true,
+          homeButton: true,
+          sceneModePicker: true,
+          timeline: true,
+          animation: true,
+          fullscreenButton: true,
+          geocoder: true,
+          baseLayerPicker: true,
+          infoBox: true,
+          selectionIndicator: true,
+        });
+
+        // Use NEW CesiumNavigation as a class
+        new CesiumNavigation(viewer, {
+          enableCompass: true,
+          enableZoomControls: true
+        });
+
+        if (!points.length) {
+          alert("No waypoints found! Go back and enter some.");
+          // (Do NOT return! Let the rest of the map code run.)
+          // return;
+        }
+
+        // Polyline positions
+        var routePositions = [];
+        points.forEach(function(pt) {
+          routePositions.push(pt.lon, pt.lat, pt.alt);
+        });
+
+        // Main red polyline (route)
+        viewer.entities.add({
+          name: "Route Path",
+          polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights(routePositions),
+            width: 4,
+            material: Cesium.Color.RED.withAlpha(0.8),
+            clampToGround: false
+          }
+        });
+
+        // Plot waypoints
+        points.forEach(function(pt, i) {
+          // Vertical line
+          viewer.entities.add({
+            polyline: {
+              positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+                pt.lon, pt.lat, 0,
+                pt.lon, pt.lat, pt.alt
+              ]),
+              width: 2,
+              material: Cesium.Color.SKYBLUE.withAlpha(0.7)
+            }
+          });
+          // Main point
+          viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, pt.alt),
+            point: {
+              pixelSize: 11,
+              color: Cesium.Color.YELLOW,
+              outlineColor: Cesium.Color.BLACK,
+              outlineWidth: 1
+            },
+            label: {
+              text: `P${i+1}\nAlt: ${pt.alt}m`,
+              font: "14px 'Segoe UI', Arial, sans-serif",
+              fillColor: Cesium.Color.BLACK,
+              outlineColor: Cesium.Color.WHITE,
+              outlineWidth: 2,
+              pixelOffset: new Cesium.Cartesian2(0, -18),
+              style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+              verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+            }
+          });
+          // Ground dot
+          viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 0),
+            point: {
+              pixelSize: 7,
+              color: Cesium.Color.DARKBLUE.withAlpha(0.5),
+              outlineColor: Cesium.Color.WHITE,
+              outlineWidth: 1
+            }
+          });
+        });
+
+        // Enable click-to-get-coordinates
+        viewer.screenSpaceEventHandler.setInputAction(function(click) {
+          var pickedPosition = viewer.scene.pickPosition(click.position);
+          if (Cesium.defined(pickedPosition)) {
+            var carto = Cesium.Cartographic.fromCartesian(pickedPosition);
+            var lon = Cesium.Math.toDegrees(carto.longitude);
+            var lat = Cesium.Math.toDegrees(carto.latitude);
+            var alt = carto.height;
+            alert(`Longitude: ${lon.toFixed(7)}\nLatitude: ${lat.toFixed(7)}\nAltitude: ${alt.toFixed(2)} m`);
+          } else {
+            alert("No position picked. Try zooming in and clicking on terrain or imagery.");
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+        // Camera fly to the plotted route (AFTER entities added)
+        viewer.flyTo(viewer.entities);
+      });
+  </script>
+</body>
+</html>
+

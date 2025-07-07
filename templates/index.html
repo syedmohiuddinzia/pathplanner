@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Waypoint Tool</title>
+  <style>
+    .tables-row {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }  
+    input { width: 90px; }
+    td, th { padding: 5px; border: 1px solid #aaa; }
+    table { border-collapse: collapse; margin-bottom: 1em; }
+    textarea { width: 99%; height: 70px; }
+  </style>
+</head>
+<body>
+  <form method="post">
+  <div class="tables-row">
+  <div class="column">
+    <table style="background:#f9fbe7; min-width:320px; border:1px solid #bbb;">
+      <tr style="background-color: #0066cc;">
+        <th colspan="6" style="color: #ffffff;">Compute Distance and Angle from Coordinate 1 and Coordinate 2</th>
+      </tr>
+      <tr>
+        <td>Longitude 1</td><td>Latitude 1</td><td>Altitude 1</td>
+        <td>Longitude 2</td><td>Latitude 2</td><td>Altitude 2</td>
+      </tr>
+      <tr>
+        <td><input name="lon1" value="{{lon1}}"></td>
+        <td><input name="lat1" value="{{lat1}}"></td>
+        <td><input name="alt1" value="{{alt1}}"></td>
+        <td><input name="lon2" value="{{lon2}}"></td>
+        <td><input name="lat2" value="{{lat2}}"></td>
+        <td><input name="alt2" value="{{alt2}}"></td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <button name="action" value="compute_dist_angle">Compute Distance & Angle</button>
+          Distance: <input readonly value="{{result_dist}}">
+          Angle: <input readonly value="{{result_ang}}">
+        </td>
+      </tr>
+    </table>
+
+    <table style="background:#f9fbe7; min-width:320px; border:1px solid #bbb;">
+      <tr  style="background-color: #0066cc;">
+        <th colspan="6" style="color: #ffffff;">Compute Coordinate 2 from Coordinate 1, Distance, and Angle</th>
+      </tr>
+      <tr>
+        <td>Longitude 1</td><td>Latitude 1</td><td>Altitude 1</td>
+        <td>Distance (m)</td><td>Angle (deg)</td><td>Altitude 2</td>
+      </tr>
+      <tr>
+        <td><input name="lon1b" value="{{lon1b}}"></td>
+        <td><input name="lat1b" value="{{lat1b}}"></td>
+        <td><input name="alt1b" value="{{alt1b}}"></td>
+        <td><input name="dist2" value="{{dist2}}"></td>
+        <td><input name="ang2" value="{{ang2}}"></td>
+        <td><input name="alt2b" value="{{alt2b}}"></td>
+      </tr>
+      <tr>
+        <td colspan="6">
+          <button name="action" value="compute_latlon">Compute</button>
+          Longitude 2: <input readonly value="{{lon2b}}">
+          Latitude 2: <input readonly value="{{lat2b}}">
+          <button name="action" value="remove_last" style="margin-left:24px; background:#e53935; color:white; border:none; padding:5px 10px; border-radius:4px;">Remove Last Waypoint</button>
+        </td>
+      </tr>
+    </table>
+    </div>
+    <div class="column" style="align-items:center;">
+    <div style="display:flex;justify-content:center;">
+      <svg width="180" height="100" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<!-- Path Line -->
+	<polyline points="40,120 120,60 180,110 240,40 80,120"  fill="none" stroke="#1976d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></polyline>
+	<!-- Waypoints -->
+	<circle cx="40" cy="120" r="12" fill="#fff" stroke="#d32f2f" stroke-width="8"></circle>
+	<circle cx="120" cy="60" r="10" fill="#fff" stroke="#43a047" stroke-width="6"></circle>
+	<circle cx="180" cy="110" r="10" fill="#fff" stroke="#43a047" stroke-width="6"></circle>
+	<circle cx="240" cy="40" r="12" fill="#fff" stroke="#43a047" stroke-width="6"></circle>
+	<circle cx="80" cy="120" r="12" fill="#fff" stroke="#d32f2f" stroke-width="8"></circle>
+	<!-- Text (no overlap with logo) -->
+	<text x="50%" y="180" text-anchor="middle" font-size="34" fill="#1976d2" font-family="Segoe UI, Arial black, sans-serif" font-weight="bold">
+	    Path Planner
+	</text>
+      </svg>
+    </div>
+    </div>
+  </div>
+  </form>
+  {% if msg %}<b style="color:red">{{msg}}</b>{% endif %}
+  <hr>
+  <b>Current Waypoints:</b>
+  <pre style="background:#f5f5f5">{{ waypoints|waypoints_inline_json }}</pre>
+</body>
+</html>
