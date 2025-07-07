@@ -1,5 +1,6 @@
 ## Fixed-Wing Drone Path Planning Tool
 This project is a web-based path planning tool developed specifically for fixed-wing MALE (Medium Altitude Long Endurance) drones. It enables operators, engineers, or mission planners to efficiently design, analyze, and export waypoint-based routes tailored to the capabilities and operational needs of fixed-wing UAVs.
+![Image0](https://github.com/syedmohiuddinzia/pathplanner/blob/main/img/0.png)
 
 ### Key Features
 - **Intuitive Web Interface:** Plan and edit waypoint routes using an easy-to-use browser interface. Waypoints can be computed based on distances and bearings, or entered directly with altitude information.
