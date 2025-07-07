@@ -24,3 +24,45 @@ This planner is ideal for:
 - Fixed-wing drone pilots/operators
 - Engineers developing autonomous mission profiles
 - Educators and researchers in unmanned aerial systems
+
+
+## Working
+- Install requirements for the software ```pip install -r requirements.txt```
+- Create a cesium account and copy [API key](https://ion.cesium.com/tokens)
+- Clone project [https://github.com/syedmohiuddinzia/pathplanner](https://github.com/syedmohiuddinzia/pathplanner)
+```bash
+git clone https://github.com/syedmohiuddinzia/pathplanner
+```
+- Open directory
+```bash
+cd pathplanner
+```  
+- Open **templates/cesium_map.html**
+```bash
+nano templates/cesium_map.html
+```
+- Paste API key instead of **API_KEY**
+```html
+Cesium.Ion.defaultAccessToken = 'API_KEY';
+```
+- Now run the application in terminal
+```bash
+python app.py
+```
+- The application will show something similar
+```bash
+smzia@smzia-LOQ:~/pathplanner$ python app.py 
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+ * Restarting with watchdog (inotify)
+ * Debugger is active!
+ * Debugger PIN: 113-524-878\
+```
+- Copy server link found in the terminal 
+```text
+http://127.0.0.1:5000
+```
+- Paste in any browser and enjoy the application locally
